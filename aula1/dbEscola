@@ -1,0 +1,73 @@
+create database dbEscola;
+use dbEscola;
+
+create table departamento (
+nome_dept varchar(20) not null,
+predio varchar(15),
+orcamento numeric(12,2),
+primary key (nome_dept)
+);
+
+create table curso(
+id_curso varchar(7) not null,
+titulo varchar(50),
+nome_dept varchar(20),
+creditos numeric(5,0),
+primary key (id_curso),
+foreign key(nome_dept) references departamento(nome_dept)
+);
+
+create table instrutor(
+ID varchar(5) not null,
+nome varchar(20) not null,
+nome_dept varchar(20),
+salario numeric(8,2),
+primary key (ID),
+foreign key (nome_dept) references departamento(nome_dept)
+);
+
+create table secao(
+id_curso varchar(8) not null,
+id_sec varchar(8) not null,
+semestre varchar(6) not null,
+ano numeric(4,0) not null,
+predio varchar(15),
+numero_sala varchar(7),
+id_periodo varchar(4),
+primary key (id_curso, id_sec, semestre, ano),
+foreign key (id_curso) references curso(id_curso)
+);
+
+create table ministra(
+ID varchar(5) not null,
+id_curso varchar(8) not null,
+id_sec varchar(8) not null,
+semestre varchar(6) not null,
+ano numeric(4,0) not null,
+primary key (ID, id_curso, id_sec, semestre, ano),
+foreign key (id_curso, id_sec, semestre, ano) references secao(id_curso, id_sec, semestre, ano),
+foreign key (ID) references instrutor(ID)
+);
+
+INSERT INTO departamento (nome_dept, predio, nome_dept)
+VALUES ("DAIC", "CMC", 2000.10);
+
+INSERT INTO curso (id_curso, titulo, nome_dept, creditos)
+VALUES ("101010", "TADS", "DAIC", 10);
+
+INSERT INTO instrutor (ID, nome, nome_dept, salario)
+VALUES ("1010", "Fulano da Silva", "DAIC", 10000.78);
+INSERT INTO instrutor (ID, nome, nome_dept, salario)
+VALUES ("1011", "Sicrano da Costa", "DAIC", 8750.35);
+
+
+
+INSERT INTO secao (id_curso, id_sec, semestre, ano, predio, numero_sala, id_periodo)
+VALUES ("101010", "1010", "2", 2023, "CMC", "5", "1");
+
+INSERT INTO ministra (ID, id_curso, id_sec, semestre, ano)
+VALUES ("1010", "101010", "1010", "2", 2023);
+
+delete FROM instrutor
+WHERE ID = "1010";
+
