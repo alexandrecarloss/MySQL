@@ -46,3 +46,15 @@ primary key (id, num_conta),
 foreign key(id) references cliente(id),
 foreign key(num_conta) references conta(num_conta)
 );
+
+INSERT INTO agencia (nome_agencia, cidade_agencia, ativos)
+VALUES ("Nubank", "Manaus", 909034851.59);
+
+INSERT INTO cliente (id, nome_cliente, endereco_cliente, cidade_cliente)
+VALUES ("101020", "Carlos Alexandre", "Rua Sete de Setembro", "Manaus");
+
+INSERT INTO emprestimo (num_empr, nome_agencia, valor)
+VALUES ("101010", "Nubank", 7000);
+
+
+
