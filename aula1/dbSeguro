@@ -1,0 +1,46 @@
+create database dbSeguro;
+use dbSeguro;
+
+create table pessoa (
+id_motorista varchar(15),
+nome varchar(20),
+rua varchar(20),
+numero int,
+bairro varchar(20),
+cidade varchar(20),
+estado varchar(20),
+primary key (id_motorista)
+);
+
+create table carro(
+renavam varchar(15),
+modelo varchar(20),
+ano int,
+primary key (renavam)
+);
+
+create table acidente (
+num_sinistro int,
+ano int, 
+local varchar(20),
+primary key (num_sinistro)
+);
+
+create table possui(
+id_motorista varchar(15),
+renavam varchar(15),
+primary key (id_motorista, renavam),
+foreign key (id_motorista) references pessoa(id_motorista),
+foreign key (renavam) references carro(renavam)
+);
+
+create table participou (
+num_sinistro int,
+renavam varchar(15),
+id_motorista varchar(15),
+valor_dano numeric(5,2),
+primary key (num_sinistro, renavam),
+foreign key (num_sinistro) references acidente(num_sinistro),
+foreign key (renavam) references carro(renavam),
+foreign key (id_motorista) references pessoa(id_motorista)
+);
