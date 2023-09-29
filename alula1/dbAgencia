@@ -1,0 +1,50 @@
+create database dbAgencia;
+use dbAgencia;
+
+create table agencia (
+nome_agencia varchar(20),
+cidade_agencia varchar(20),
+ativos numeric(12,2),
+primary key (nome_agencia)
+);
+
+create table cliente (
+id varchar(15),
+nome_cliente varchar(20),
+endereco_cliente varchar(60),
+cidade_cliente varchar(20),
+primary key (id)
+);
+
+create table emprestimo (
+num_empr varchar(15),
+nome_agencia varchar(20),
+valor numeric(7,2),
+primary key (num_empr)
+);
+
+create table tomador (
+id varchar(15),
+num_empr varchar(15),
+primary key (id, num_empr),
+foreign key(id) references cliente(id),
+foreign key(num_empr) references emprestimo(num_empr)
+);
+
+create table conta (
+num_conta int,
+nome_agencia varchar(20),
+saldo numeric(7,2),
+primary key (num_conta),
+foreign key(nome_agencia) references agencia(nome_agencia)
+);
+
+create table depositante (
+id varchar(15),
+num_conta int,
+primary key (id, num_conta),
+foreign key(id) references cliente(id),
+foreign key(num_conta) references conta(num_conta)
+);
+
+
