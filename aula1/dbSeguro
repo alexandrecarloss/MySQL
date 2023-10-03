@@ -22,7 +22,7 @@ primary key (renavam)
 create table acidente (
 num_sinistro int,
 ano int, 
-local varchar(20),
+localizacao varchar(20),
 primary key (num_sinistro)
 );
 
@@ -44,3 +44,23 @@ foreign key (num_sinistro) references acidente(num_sinistro),
 foreign key (renavam) references carro(renavam),
 foreign key (id_motorista) references pessoa(id_motorista)
 );
+
+INSERT INTO pessoa (id_motorista, nome, rua, numero, bairro, cidade, estado)
+VALUES ("101011", "Marcos Pereira", "Valentino Dias", 1045, "Centro", "Rio de Janeiro", "Rio de Janeiro");
+
+INSERT INTO carro(renavam, modelo, ano)
+VALUES ("101111", "Esportivo", 2020);
+
+INSERT INTO acidente(num_sinistro, ano, localizacao)
+VALUES ("101111", 2023, "Rua Cupuaçú");
+
+INSERT INTO possui(id_motorista, renavam)
+VALUES ("101011", "101111");
+
+INSERT INTO participou(num_sinistro, renavam, id_motorista, valor_dano)
+VALUES ("101111", "101111", "101011", 350.89);
+
+select (nome) from pessoa
+where(id_motorista = "101011");
+
+
