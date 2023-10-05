@@ -1,0 +1,80 @@
+create database dbComercio;
+use dbComercio;
+
+create table departamento (
+id int primary key,
+nome varchar(60)
+);
+
+create table venda(
+id int primary key,
+id_departamento int,
+nome varchar(60),
+preco float,
+nome_cartao varchar(60),
+numero_cartao varchar(20),
+data_transacao date,
+foreign key(id_departamento) references departamento(id)
+);
+
+create table resultante(
+id int primary key,
+nome varchar(60)
+);
+
+create table pessoa(
+id int primary key,
+nome varchar(60),
+idade int
+);
+
+insert into departamento (id, nome) values (1, 'Clotilda');
+insert into departamento (id, nome) values (2, 'Georgette');
+insert into departamento (id, nome) values (3, 'Isabeau');
+insert into departamento (id, nome) values (4, 'Irita');
+insert into departamento (id, nome) values (5, 'Ella');
+insert into departamento (id, nome) values (6, 'Cherey');
+insert into departamento (id, nome) values (7, 'Joya');
+insert into departamento (id, nome) values (8, 'Kelsy');
+insert into departamento (id, nome) values (9, 'Clarette');
+insert into departamento (id, nome) values (10, 'Zacharias');
+
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (1, 1, 'Denna', 36.64, 'americanexpress', '374622434720404', '2023-08-06');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (2, 2,  'Rowan', 64.82, 'jcb', '3556644875262153', '2023-02-21');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (3, 3,  'Merline', 29.51, 'bankcard', '5602212820550087', '2023-05-21');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (4, 4, 'Martha', 24.06, 'diners-club-enroute', '201628689739840', '2022-11-08');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (5, 5, 'Glen', 50.6, 'china-unionpay', '5602220761799977', '2023-02-25');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (6, 6, 'Paula', 90.17, 'maestro', '6304377087907863', '2022-10-10');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (7, 7, 'Jerrie', 6.5, 'mastercard', '5100142474646823', '2022-11-12');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (8, 8, 'Emlyn', 82.0, 'jcb', '3567376052299396', '2023-01-16');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (9, 9, 'Gleda', 39.65, 'switch', '6759939549368685', '2023-06-09');
+insert into venda (id, id_departamento, nome, preco, numero_cartao, nome_cartao, data_transacao) values (10, 10, 'Harrison', 31.14, 'instapayment', '6376584549010763', '2022-11-15');
+
+insert into resultante (id, nome) values (67, 'Gwenore');
+insert into resultante (id, nome) values (98, 'Maridel');
+insert into resultante (id, nome) values (20, 'Maria');
+insert into resultante (id, nome) values (99, 'Tedie');
+insert into resultante (id, nome) values (72, 'Tore');
+insert into resultante (id, nome) values (7, 'Aldis');
+insert into resultante (id, nome) values (13, 'Elora');
+insert into resultante (id, nome) values (94, 'Vivienne');
+insert into resultante (id, nome) values (1, 'Ingmar');
+insert into resultante (id, nome) values (24, 'Cicely');
+
+insert into pessoa (id, nome, idade) values (44, 'Niles', 7);
+insert into pessoa (id, nome, idade) values (84, 'Kerrill', 45);
+insert into pessoa (id, nome, idade) values (78, 'Melly', 65);
+insert into pessoa (id, nome, idade) values (3, 'Kissee', 84);
+insert into pessoa (id, nome, idade) values (19, 'Euell', 100);
+insert into pessoa (id, nome, idade) values (52, 'Lee', 75);
+insert into pessoa (id, nome, idade) values (53, 'Robers', 69);
+insert into pessoa (id, nome, idade) values (91, 'Hazel', 26);
+insert into pessoa (id, nome, idade) values (34, 'Rosita', 25);
+insert into pessoa (id, nome, idade) values (1, 'Emilio', 4);
+
+select id, nome from departamento
+where id in
+(select id from venda where preco > 98);
+
+
+
