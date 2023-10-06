@@ -1,0 +1,25 @@
+create database dbPessoa;
+use dbPessoa;
+
+create table pessoa (
+	id INT primary key,
+	nome VARCHAR(50),
+	idade INT
+);
+insert into pessoa (id, nome, idade) values (1, "Kent", 52);
+insert into pessoa (id, nome, idade) values (2, "Rebeka", 10);
+insert into pessoa (id, nome, idade) values (3, "Rheba", 37);
+insert into pessoa (id, nome, idade) values (4, 'Guglielma', 30);
+insert into pessoa (id, nome, idade) values (5, 'Issy', 15);
+insert into pessoa (id, nome, idade) values (6, 'Flore', 82);
+insert into pessoa (id, nome, idade) values (7, 'Jacynth', 56);
+insert into pessoa (id, nome, idade) values (8, 'Boyd', 5);
+insert into pessoa (id, nome, idade) values (9, 'Dickie', 29);
+insert into pessoa (id, nome, idade) values (10, 'Pansie', 1);
+insert into pessoa (id, nome, idade) values (11, 'Andre', 1);
+
+
+SELECT idade, count(*) as idade_igual
+from pessoa
+GROUP BY idade;
+
