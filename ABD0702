@@ -473,3 +473,25 @@ HAVING COUNT(*) > 49;
 SELECT clinome
 FROM cliente
 WHERE clinome LIKE 'a%o';
+
+SELECT bainome, clicodigo 
+FROM cliente 
+RIGHT OUTER JOIN bairro ON baicodigo = clibaicodigo;
+
+SELECT bainome, clicodigo 
+FROM cliente 
+RIGHT OUTER JOIN bairro ON baicodigo = clibaicodigo
+WHERE clicodigo IS NULL;
+
+SELECT bainome
+FROM bairro WHERE baicodigo NOT IN (SELECT clibaicodigo FROM cliente);
+
+-- 9 mostrar o nome dos funcionários gerentes e noes de seus subordinados
+SELECT ger.funcodigo 'Cod gerente', ger.funnome 'Nome gerente',
+sub.funcodigo 'cod sub', sub.funnome 'nome sub'
+FROM funcionario ger 
+INNER JOIN funcionario sub
+ON ger.funcodigo = sub.funcodgerente
+ORDER BY ger.funcodigo;
+
+--Mostre quantos subordinados tem cada cliente 
