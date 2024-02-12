@@ -433,7 +433,7 @@ UNLOCK TABLES;
 USE bd2020;
 SHOW TABLES;
 
-SELECT * FROM clientes;
+SELECT * FROM cliente;
 
 SELECT bainome
 FROM cliente 
@@ -702,6 +702,7 @@ left join itemvenda on itvprocodigo = procodigo
 where itvvencodigo is null;
 
 #Questão 28
+/*
 show tables;
 select * from venda;
 create table if not exists vendedor (
@@ -714,7 +715,7 @@ ALTER TABLE venda DROP constraint `venda_ibfk_3`;
 alter table venda add column venvddfuncodigo int(11) NOT NULL default 1;
 alter table venda add constraint `venda_ibfk_3`
 foreign key (venvddfuncodigo) references vendedor (vddfuncodigo) on delete cascade;
-
+*/
   
 #Questão 29
 select grpcodigo, sum(propreco * itvqtde) 'Total em vendas' from produto 
