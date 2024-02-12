@@ -563,8 +563,184 @@ values (32, 'Maria Maquiné Silva', 2578.90, 1, 2, NULL, 1, 'F', '2023-10-26', '
 update funcionario 
 set funsalario = funsalario * 1.1 where fundtdem is null;
 
-#Questão 10
+#Questão 11
 select * from funcionario;
 update funcionario 
 set fundtdem = '2023-10-27' where funcodigo = 21;
+
+#Questão 12
+select pronome, procusto, prosaldo from produto
+inner join itemvenda on itvprocodigo = procodigo
+inner join venda on itvvencodigo = vencodigo
+inner join cliente on venclicodigo = clicodigo
+where proativo = 1 and prosaldo > 5 and cliestcodigo = 2 and clisexo = 'M';
+
+select pronome, procusto, prosaldo from produto
+inner join itemvenda on itvprocodigo = procodigo
+inner join venda on itvvencodigo = vencodigo
+inner join cliente on venclicodigo = clicodigo
+inner join estadocivil on cliestcodigo = estcodigo
+where proativo = 1 and prosaldo > 5 and estdescricao = 'Casado' and clisexo = 'M';
+
+#Questão 13
+select clinome from cliente
+inner join venda on venclicodigo = clicodigo
+inner join funcionario on venfuncodigo = funcodigo
+where clisexo = 'F' and clirendamensal between 100 and 1500 and fundtdem is not null;
+
+#Questão 14
+select funnome, funsalario, bainome, zonnome 
+from funcionario inner join bairro on funbaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+where fundtdem is not null;
+
+#Questão 15
+select funnome, funsalario, zonnome 
+from funcionario inner join bairro on funbaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+where fundtdem is null and funnome like '%s';
+
+#Questão 16
+select clinome, zonnome, estdescricao from cliente
+inner join venda on venclicodigo = clicodigo
+inner join bairro on clibaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+inner join estadocivil on cliestcodigo = estcodigo; 
+
+#Questão 17
+select pronome from produto
+inner join fornecedor on proforcnpj = forcnpj
+inner join cidade on forcidcodigo = cidcodigo
+where cidnome not in('Manaus', 'Porto Velho', 'Rio Branco')
+order by pronome asc;
+
+#Questão 18
+select clinome from cliente
+inner join bairro on clibaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+inner join venda on venclicodigo = clicodigo
+inner join funcionario on venfuncodigo = funcodigo 
+where bainome in ('Cidade Nova', 'Cachoeirinha', 'Chapada', 'Japiim', 'Educandos')
+and funestcodigo in (1, 3) and funcodigo in(
+select funcodigo from funcionario
+inner join bairro on funbaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+where zonnome = 'SUL');
+
+
+select funcodigo from funcionario
+inner join bairro on funbaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+where zonnome = 'SUL';
+
+select clinome from cliente
+inner join bairro on clibaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+inner join venda on venclicodigo = clicodigo
+inner join funcionario on venfuncodigo = funcodigo 
+inner join estadocivil on funestcodigo = estcodigo
+where bainome in ('Cidade Nova', 'Cachoeirinha', 'Chapada', 'Japiim', 'Educandos')
+and estdescricao in ('Solteiro', 'Divorciado') and zonnome = 'SUL';
+
+#Questão 19
+select distinct grpdescricao from grupoproduto
+inner join produto on progrpcodigo = grpcodigo
+inner join itemvenda on itvprocodigo = procodigo
+inner join venda on vencodigo = itvvencodigo
+inner join cliente on venclicodigo = clicodigo
+inner join bairro on baicodigo = clibaicodigo
+inner join zona on zoncodigo = baizoncodigo
+inner join cidade on zoncidcodigo = cidcodigo
+where proativo = 0 and cidnome = 'Manaus';
+
+#Questão 20
+select vencodigo, pronome, itvqtde from itemvenda
+inner join venda on itvvencodigo = vencodigo
+inner join produto on itvprocodigo = procodigo
+where proativo = 0;
+
+#Questão 21
+select funnome, pronome from venda
+inner join funcionario on funcodigo = venfuncodigo
+inner join itemvenda on vencodigo = itvvencodigo
+inner join produto on procodigo = itvprocodigo
+where funnome like('%f%') and funnome like('%u%')
+order by funnome asc, propreco asc;
+
+#Questão 22
+select clinome from cliente 
+inner join venda on venclicodigo = clicodigo
+inner join itemvenda on itvvencodigo = vencodigo
+inner join produto on itvprocodigo = procodigo
+inner join grupoproduto on progrpcodigo = grpcodigo
+where proativo = 1 and grpdescricao = 'Informatica';
+
+#Questão 23
+select bainome from bairro 
+left JOIN  funcionario on funbaicodigo = baicodigo
+where funcodigo is null;
+
+#Questão 24
+select fornome from fornecedor 
+left JOIN  produto on proforcnpj = forcnpj
+where procodigo is null;
+
+#Questão 25
+select distinct clinome, estdescricao from cliente 
+inner join estadocivil on estcodigo = cliestcodigo
+left JOIN  venda on venclicodigo = clicodigo
+where vencodigo is null;
+
+#Questão 26
+select funnome from funcionario
+left join venda on venfuncodigo = funcodigo
+where vencodigo is null;
+
+#Questão 27
+select pronome from produto
+left join itemvenda on itvprocodigo = procodigo
+where itvvencodigo is null;
+
+#Questão 28
+show tables;
+select * from venda;
+create table if not exists vendedor (
+	vddfuncodigo int(11) NOT NULL DEFAULT '0',
+    primary key (vddfuncodigo), 
+    CONSTRAINT `vendedor_ibfk_1` foreign key (vddfuncodigo) references funcionario (funcodigo)
+);
+insert into vendedor values (1);
+ALTER TABLE venda DROP constraint `venda_ibfk_3`;
+alter table venda add column venvddfuncodigo int(11) NOT NULL default 1;
+alter table venda add constraint `venda_ibfk_3`
+foreign key (venvddfuncodigo) references vendedor (vddfuncodigo) on delete cascade;
+
+  
+#Questão 29
+select grpcodigo, sum(propreco * itvqtde) 'Total em vendas' from produto 
+inner join itemvenda on itvprocodigo = procodigo
+inner join grupoproduto on progrpcodigo = grpcodigo
+group by grpcodigo order by grpcodigo;
+
+#Questão 30
+select zonnome, avg(funsalario) 'Média salarial' from funcionario 
+inner join bairro on funbaicodigo = baicodigo
+inner join zona on zoncodigo = baizoncodigo
+group by zonnome order by avg(funsalario);
+
+#Questão 31
+select sum(clirendamensal) 'Renda total', clisexo, bainome from cliente
+inner join bairro on clibaicodigo = baicodigo
+group by clisexo, bainome;
+
+#Questão 32
+show tables;
+select * from cliente;
+select sum(clirendamensal) 'Renda total', zonnome, estdescricao from cliente
+inner join bairro on clibaicodigo = baicodigo
+inner join zona on baizoncodigo = zoncodigo
+inner join estadocivil on cliestcodigo = estcodigo
+group by zonnome, estdescricao;
+
+
 
