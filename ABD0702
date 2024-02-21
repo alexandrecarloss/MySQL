@@ -702,7 +702,7 @@ left join itemvenda on itvprocodigo = procodigo
 where itvvencodigo is null;
 
 #Questão 28
-/*
+/* 
 show tables;
 select * from venda;
 create table if not exists vendedor (
@@ -710,13 +710,17 @@ create table if not exists vendedor (
     primary key (vddfuncodigo), 
     CONSTRAINT `vendedor_ibfk_1` foreign key (vddfuncodigo) references funcionario (funcodigo)
 );
-insert into vendedor values (1);
+insert into vendedor values 
+select distinct funcondigo 
+from funcionario inner join venda
+on funcodigo = venfuncodigo;
 ALTER TABLE venda DROP constraint `venda_ibfk_3`;
 alter table venda add column venvddfuncodigo int(11) NOT NULL default 1;
 alter table venda add constraint `venda_ibfk_3`
 foreign key (venvddfuncodigo) references vendedor (vddfuncodigo) on delete cascade;
 */
-  
+show create table venda;
+
 #Questão 29
 select grpcodigo, sum(propreco * itvqtde) 'Total em vendas' from produto 
 inner join itemvenda on itvprocodigo = procodigo
@@ -742,6 +746,3 @@ inner join bairro on clibaicodigo = baicodigo
 inner join zona on baizoncodigo = zoncodigo
 inner join estadocivil on cliestcodigo = estcodigo
 group by zonnome, estdescricao;
-
-
-
