@@ -815,3 +815,26 @@ from funcionario
 where fundtdem is not null;
  
  
+ #criando view
+ select clicodigo, clinome, clisexo, bainome, estdescricao, baizoncodigo
+ from bairro inner join cliente on clibaicodigo = baicodigo
+ inner join estadocivil on estcodigo = cliestcodigo;
+ 
+ create view vw_cliente_bai_estcivil
+ as 
+  select clicodigo, clinome, clisexo, bainome, estdescricao, baizoncodigo
+ from bairro inner join cliente on clibaicodigo = baicodigo
+ inner join estadocivil on estcodigo = cliestcodigo;
+ 
+ select * from vw_cliente_bai_estcivil;
+ 
+ drop view vw_cliente_bai_estcivil
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
