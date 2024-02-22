@@ -746,3 +746,72 @@ inner join bairro on clibaicodigo = baicodigo
 inner join zona on baizoncodigo = zoncodigo
 inner join estadocivil on cliestcodigo = estcodigo
 group by zonnome, estdescricao;
+
+show create table cliente;
+#nome gerente e quantos subordinados
+select ger.funcodigo, ger.funnome, count(*) 'Total de subordinados' from funcionario ger inner join funcionario sub on ger.funcodigo = sub.funcodgerente
+group by ger.funcodigo, ger.funnome;
+
+select clinome, clirendamensal
+from cliente
+order by clirendamensal;
+
+select clicodigo from cliente
+where clinome = 'Marcelo Chamy Machado';
+
+update cliente set clirendamensal = 1207
+where clicodigo = 528;
+ 
+ #seleção de 
+ select clinome, clirendamensal from cliente
+ where clicodigo >= (select avg(clirendamensal) from cliente)
+ order by clirendamensal;
+ 
+select left ('BANCO DE DADOS', 4) 'Left';
+select right ('BANCO DE DADOS', 4) 'right';
+select substring('BANCO DE DADOS', 5) 'substring';
+select substring('BANCO DE DADOS', 5, 4) 'substring';
+select locate('C', 'BANCO DE DADOS') 'locate';
+select concat('Tamanho de BANCO DE DADOS: ', cast(length('BANCO DE DADOS') as char)) 'concat';
+ 
+ #Primeiro nome
+ select clinome, 
+ locate(' ', clinome) 'espaço',
+ left(clinome, locate(' ', clinome)-1) 'Primeiro nome'
+ from cliente;
+ 
+ select left(clinome, locate(' ', clinome))
+ from cliente;
+ 
+ 
+ #Ultimos nomes
+ select clinome, 
+ locate(' ', reverse(clinome)) 'espaço',
+ right(clinome, locate(' ', reverse(clinome))-1) 'Ultimo nome'
+ from cliente;
+ 
+ #nomes do meio 
+ select clinome, 
+ locate(' ', clinome) 'loc',
+ locate(' ', reverse(clinome))+1 'loc_ult',
+ substring(clinome,
+	 locate(' ', clinome),
+	 length(clinome) - 
+	 locate(' ', (clinome)) - 
+	 locate(' ', reverse(clinome))+1) 'Meio'
+ from cliente;
+ 
+ #data de demissao em dd/mm/aaaa de aaa/mm/dd
+ select fundtdem,
+ left(fundtdem, 4) 'Ano',
+ left(right(fundtdem, 5), 2) 'Mes',
+ right(left(fundtdem, 7), 2) 'Mes1',
+ substring(fundtdem, 6, 2) 'mes2',
+ right(fundtdem, 2) 'dia',
+ concat(right(fundtdem, 2), '/',
+	left(right(fundtdem, 5), 2), '/',
+    left(fundtdem, 4)) data_BR
+from funcionario
+where fundtdem is not null;
+ 
+ 
