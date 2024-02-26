@@ -828,7 +828,48 @@ where fundtdem is not null;
  
  select * from vw_cliente_bai_estcivil;
  
- drop view vw_cliente_bai_estcivil
+ drop view vw_cliente_bai_estcivil;
+ 
+ 
+ 
+ #Questão 14
+select clirendamensal from cliente order by clirendamensal desc limit 5;
+ 
+ #Questão 13
+ select clinome, clirendamensal from cliente order by clirendamensal asc limit 3;
+ 
+ #Questão 12
+ select distinct clinome, vendata from 
+ cliente inner join venda on clicodigo = venclicodigo
+ order by vendata asc;
+ 
+ #Questão 11
+select zonnome, max(clirendamensal) from cliente
+ inner join bairro on clibaicodigo = baicodigo
+ inner join zona on baizoncodigo = zoncodigo
+ group by zoncodigo;
+ 
+  #Questão 10
+select 
+right(funnome, locate(' ', reverse(funnome))-1) 'Ultimo nome'
+ from funcionario where funnome in (
+ select funnome from funcionario 
+left outer join venda on funcodigo = venfuncodigo
+ where venfuncodigo is null);
+ 
+#Questão 9
+update funcionario set fundtnascto = '1990-01-01';
+ select funnome, fundtnascto, count(vencodigo), venfuncodigo from
+ funcionario inner join venda on funcodigo = venfuncodigo
+ group by venfuncodigo
+ order by count(vencodigo) desc;
+ 
+ #Questão 8
+show create table funcionario;
+select * from funcionario;
+ 
+ 
+ 
  
  
  
