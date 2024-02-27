@@ -513,7 +513,7 @@ alter table venda
 add vendtcancelamento  date;
 
 #Questão 3
-create table formapagamento (
+create table if not exists formapagamento (
 	fpgcodigo smallint not null,
 	fpgdescricao  varchar(80) not null,
 	fpgativo boolean not null,
@@ -527,9 +527,8 @@ alter table venda
 add constraint foreign key (venfpgcodigo) references formapagamento (fpgcodigo);
 
 # Questão 5
-select * from venda;
-
-insert into formapagamento values(3, 'Pix', true);
+select * from formapagamento;
+insert into formapagamento values(1, 'Dinheiro', true);
 update venda set venfpgcodigo = 3 where venfpgcodigo is null;
 alter table venda 
 modify venfpgcodigo smallint NOT NULL;
@@ -829,54 +828,61 @@ where fundtdem is not null;
  select * from vw_cliente_bai_estcivil;
  
  drop view vw_cliente_bai_estcivil;
- 
- 
- 
- #Questão 14
-select clirendamensal from cliente order by clirendamensal desc limit 5;
- 
- #Questão 13
- select clinome, clirendamensal from cliente order by clirendamensal asc limit 3;
- 
- #Questão 12
- select distinct clinome, vendata from 
- cliente inner join venda on clicodigo = venclicodigo
- order by vendata asc;
- 
- #Questão 11
-select zonnome, max(clirendamensal) from cliente
- inner join bairro on clibaicodigo = baicodigo
- inner join zona on baizoncodigo = zoncodigo
- group by zoncodigo;
- 
-  #Questão 10
-select 
-right(funnome, locate(' ', reverse(funnome))-1) 'Ultimo nome'
- from funcionario where funnome in (
- select funnome from funcionario 
-left outer join venda on funcodigo = venfuncodigo
- where venfuncodigo is null);
- 
-#Questão 9
-update funcionario set fundtnascto = '1990-01-01';
- select funnome, fundtnascto, count(vencodigo), venfuncodigo from
- funcionario inner join venda on funcodigo = venfuncodigo
- group by venfuncodigo
- order by count(vencodigo) desc;
- 
- #Questão 8 
- select ger.funnome, count(fun.funcodgerente) 'Subordinados' from funcionario ger
- inner join funcionario fun on ger.funcodigo = fun.funcodgerente
- group by fun.funcodgerente having count(fun.funcodgerente) > 3;
- 
-#Questão 7
-select sum(itvqtde * propreco) 'Total venda', fpgdescricao, count(distinct itvvencodigo) 'Quantidade' from 
-venda
+
+#Questão 1
+#drop table alteracaosalario;
+create table alteracaosalario (
+	altcodigo int,
+    altfuncodigo int,
+    altsalario double(6,2),
+    altdata date,
+    altpercentual double(3,2),
+    primary key (altcodigo),
+    constraint foreign key (altfuncodigo) references funcionario(funcodigo)
+);
+
+#Questão 2
+insert into alteracaosalario  values (1, 1, (select funsalario from funcionario where funcodigo = 1), current_date(), 1.1);
+update funcionario  set funsalario = funsalario * 1.1 where funcodigo = 1;
+
+insert into alteracaosalario  values (2, 2, (select funsalario from funcionario where funcodigo = 2), current_date(), 1.2);
+update funcionario  set funsalario = funsalario * 1.2 where funcodigo = 2;
+
+insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
+update funcionario  set funsalario = funsalario * 1.09 where funcodigo = 3;
+
+select * from funcionario;
+DELIMITER //
+CREATE TRIGGER trgalterasalario BEFORE update ON funcionario
+FOR EACH ROW
+BEGIN
+	
+	insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
+END //
+DELIMITER ;
+
+drop trigger trgalterasalario;
+ #Questão 3
+ select funnome, altsalario, altpercentual, altdata from funcionario
+inner join alteracaosalario on altfuncodigo = funcodigo
+where altpercentual > 1;
+
+#Questão 4
+select count(vencodigo) 'Total venda', clisexo, fpgdescricao from produto
+inner join itemvenda on itvprocodigo = procodigo
+inner join venda on itvvencodigo = vencodigo
 inner join formapagamento on venfpgcodigo = fpgcodigo
-inner join itemvenda on itvvencodigo = vencodigo
-inner join produto on itvprocodigo = procodigo
-group by venfpgcodigo
-order by count(distinct itvvencodigo) desc limit 1;
+inner join cliente on venclicodigo = clicodigo
+group by clisexo, fpgcodigo;
+
+#Questão 5
+select count(procodigo), pronome, prosaldo from produto
+inner join itemvenda on itvprocodigo = procodigo
+inner join venda on itvvencodigo = vencodigo
+inner join cliente on venclicodigo = clicodigo
+group by procodigo, clisexo
+having clisexo = 'F'
+order by count(procodigo) desc limit 1;
 
 #Questão 6
 select count(procodigo) 'Qtde vendido', pronome, prosaldo, estdescricao from produto
@@ -889,51 +895,50 @@ group by procodigo, cliestcodigo
 having estdescricao in ('Solteiro', 'Divorciado')
 order by count(procodigo) asc;
 
-#Questão 5
-select count(procodigo), pronome, prosaldo from produto
-inner join itemvenda on itvprocodigo = procodigo
-inner join venda on itvvencodigo = vencodigo
-inner join cliente on venclicodigo = clicodigo
-group by procodigo, clisexo
-having clisexo = 'F'
-order by count(procodigo) desc limit 1;
- 
- #Questão 4
-select count(vencodigo) 'Total venda', clisexo, fpgdescricao from produto
-inner join itemvenda on itvprocodigo = procodigo
-inner join venda on itvvencodigo = vencodigo
+#Questão 7
+select sum(itvqtde * propreco) 'Total venda', fpgdescricao, count(distinct itvvencodigo) 'Quantidade' from 
+venda
 inner join formapagamento on venfpgcodigo = fpgcodigo
-inner join cliente on venclicodigo = clicodigo
-group by clisexo, fpgcodigo;
+inner join itemvenda on itvvencodigo = vencodigo
+inner join produto on itvprocodigo = procodigo
+group by venfpgcodigo
+order by count(distinct itvvencodigo) desc limit 1;
 
- #Questão 3
- select funnome, altsalario, altpercentual, altdata from funcionario
-inner join alteracaosalario on altfuncodigo = funcodigo
-where altpercentual > 1;
-
-#Questão 2
-insert into alteracaosalario  values (1, 1, (select funsalario from funcionario where funcodigo = 1), current_date(), 1.1);
-update funcionario  set funsalario = funsalario * 1.1 where funcodigo = 1;
-
-insert into alteracaosalario  values (2, 2, (select funsalario from funcionario where funcodigo = 2), current_date(), 1.2);
-update funcionario  set funsalario = funsalario * 1.2 where funcodigo = 2;
-
-insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
-update funcionario  set funsalario = funsalario * 1.09 where funcodigo = 3;
-
-#Questão 1
-drop table alteracaosalario;
-create table alteracaosalario (
-	altcodigo int,
-    altfuncodigo int,
-    altsalario double(6,2),
-    altdata date,
-    altpercentual double(3,2),
-    primary key (altcodigo),
-    constraint foreign key (altfuncodigo) references funcionario(funcodigo)
-);
-
-
-
-
-
+ #Questão 8 
+ select ger.funnome, count(fun.funcodgerente) 'Subordinados' from funcionario ger
+ inner join funcionario fun on ger.funcodigo = fun.funcodgerente
+ group by fun.funcodgerente having count(fun.funcodgerente) > 3;
+ 
+ #Questão 9
+update funcionario set fundtnascto = '1990-01-01';
+ select funnome, fundtnascto, count(vencodigo), venfuncodigo from
+ funcionario inner join venda on funcodigo = venfuncodigo
+ group by venfuncodigo
+ order by count(vencodigo) desc;
+ 
+ #Questão 10
+select 
+right(funnome, locate(' ', reverse(funnome))-1) 'Ultimo nome'
+ from funcionario where funnome in (
+ select funnome from funcionario 
+left outer join venda on funcodigo = venfuncodigo
+ where venfuncodigo is null);
+ 
+  #Questão 11
+select zonnome, max(clirendamensal) from cliente
+ inner join bairro on clibaicodigo = baicodigo
+ inner join zona on baizoncodigo = zoncodigo
+ group by zoncodigo;
+ 
+  #Questão 12
+ select distinct clinome, vendata from 
+ cliente inner join venda on clicodigo = venclicodigo
+ order by vendata asc;
+ 
+ #Questão 13
+ select clinome, clirendamensal from cliente order by clirendamensal asc limit 3;
+ 
+#Questão 14
+select clirendamensal from cliente order by clirendamensal desc limit 5;
+ 
+ 
