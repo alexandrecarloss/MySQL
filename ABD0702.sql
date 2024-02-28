@@ -909,9 +909,10 @@ order by count(distinct itvvencodigo) desc limit 1;
  inner join funcionario fun on ger.funcodigo = fun.funcodgerente
  group by fun.funcodgerente having count(fun.funcodgerente) > 3;
  
+
  #Questão 9
-update funcionario set fundtnascto = '1990-01-01';
- select funnome, fundtnascto, count(vencodigo), venfuncodigo from
+update funcionario set fundtnascto = '1993-01-01' where funcodigo = 2;
+ select funnome, (year(current_date()) - year(fundtnascto)) 'Idade', count(vencodigo), venfuncodigo from
  funcionario inner join venda on funcodigo = venfuncodigo
  group by venfuncodigo
  order by count(vencodigo) desc;
