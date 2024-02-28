@@ -832,18 +832,28 @@ where fundtdem is not null;
 #Questão 1
 #drop table alteracaosalario;
 create table alteracaosalario (
-	altcodigo int,
+	altcodigo int auto_increment,
     altfuncodigo int,
-    altsalario double(6,2),
+    altantsalario double(6,2),
+    altnovosalario double(6,2),
     altdata date,
-    altpercentual double(3,2),
+    altpercentual float,
     primary key (altcodigo),
     constraint foreign key (altfuncodigo) references funcionario(funcodigo)
 );
 
+DELIMITER //
+CREATE TRIGGER trgalterasalario BEFORE update ON funcionario
+FOR EACH ROW
+BEGIN
+	insert into alteracaosalario (altfuncodigo, altantsalario, altnovosalario, altdata, altpercentual) 
+    values (old.funcodigo, old.funsalario, new.funsalario,  current_date(), (new.funsalario / old.funsalario));
+END //
+DELIMITER ;
+
 #Questão 2
 insert into alteracaosalario  values (1, 1, (select funsalario from funcionario where funcodigo = 1), current_date(), 1.1);
-update funcionario  set funsalario = funsalario * 1.1 where funcodigo = 1;
+update funcionario  set funsalario = funsalario * 0.8 where funcodigo = 1;
 
 insert into alteracaosalario  values (2, 2, (select funsalario from funcionario where funcodigo = 2), current_date(), 1.2);
 update funcionario  set funsalario = funsalario * 1.2 where funcodigo = 2;
@@ -851,17 +861,7 @@ update funcionario  set funsalario = funsalario * 1.2 where funcodigo = 2;
 insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
 update funcionario  set funsalario = funsalario * 1.09 where funcodigo = 3;
 
-select * from funcionario;
-DELIMITER //
-CREATE TRIGGER trgalterasalario BEFORE update ON funcionario
-FOR EACH ROW
-BEGIN
-	
-	insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
-END //
-DELIMITER ;
 
-drop trigger trgalterasalario;
  #Questão 3
  select funnome, altsalario, altpercentual, altdata from funcionario
 inner join alteracaosalario on altfuncodigo = funcodigo
