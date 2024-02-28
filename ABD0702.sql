@@ -937,7 +937,14 @@ select zonnome, max(clirendamensal) from cliente
  order by vendata asc;
  
  #Questão 13
- select clinome, clirendamensal from cliente order by clirendamensal asc limit 3;
+  select clinome, clirendamensal 
+	  from cliente
+	  where clirendamensal <= ( 
+			select max(clirendamensal) from (
+				 select distinct clirendamensal 
+						from cliente 
+						order by clirendamensal limit 3) as rendas);
+                
  
 #Questão 14
 select clirendamensal from cliente order by clirendamensal desc limit 5;
