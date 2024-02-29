@@ -1037,8 +1037,8 @@ begin
 end ##
 delimiter ;
  
- select funsalario from funcionario where funcodigo = 1;
- update funcionario set 
+ select funcodigo from funcionario where fundtdem is not null;
+ 
  
  #procedimento para listar bairro, sexo e nome de um bairro e sexo especificado verifica se bairro e sexo é válido
 delimiter ##
@@ -1046,7 +1046,7 @@ create procedure sp_altera_salario(p_funcodigo int, p_novosalario double(6,1))
 begin 
 	declare v_existe boolean default false;
     declare v_salariovalido boolean default false;
-    
+    declare v_demitido boolean default false;
     set v_existe = 
 		(select count(*) 
         from funcionario 
@@ -1067,8 +1067,45 @@ begin
 end ##
 delimiter ;
 
+
+delimiter ##
+create procedure sp_altera_salario_dem(p_funcodigo int, p_novosalario double(6,1))
+begin 
+	declare v_existe boolean default false;
+    declare v_salariovalido boolean default false;
+    declare v_demitido boolean default false;
+    set v_existe = 
+		(select count(*) 
+        from funcionario 
+        where funcodigo = p_funcodigo);
+	if v_existe
+		then 
+			if p_funcodigo in 
+				(select funcodigo 
+				from funcionario 
+				where fundtdem is not null)
+				then 
+					select 'Funcionario demitido' resp;
+				else
+					if p_novosalario > (select funsalario 
+						from funcionario 
+						where funcodigo = p_funcodigo)
+						then 
+							update funcionario  set funsalario = p_novosalario where funcodigo = p_funcodigo;
+					else
+						select 'Salário menor ou igual que o anterior' resp;
+					end if;
+			end if;
+	else 
+		select 'Funcionário não existe' resp;
+    end if;
+end ##
+delimiter ;
+
+
+
 drop procedure sp_altera_salario;
 show create table funcionario;
-select * from funcionario;
-call sp_altera_salario(1, 30000);
+select * from funcionario where fundtdem is not null;
+call sp_altera_salario_dem(2, 30000);
 
