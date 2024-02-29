@@ -948,5 +948,92 @@ select zonnome, max(clirendamensal) from cliente
  
 #Questão 14
 select clirendamensal from cliente order by clirendamensal desc limit 5;
- 
+
+
+#stored procedure
+
+#procedimento para listar bairro e nome de um bairro especificado
+
+delimiter ##
+create procedure sp_lista_bairro(p_bairro varchar(30))
+begin 
+	select bainome, clinome 
+	from bairro 
+	inner join cliente
+	 on baicodigo = clibaicodigo
+     where bainome = p_bairro;
+end ##
+delimiter ;
+
+#procedimento para listar bairro, sexo e nome de um bairro e sexo especificado
+delimiter ##
+create procedure sp_lista_bairro_sexo(p_bairro varchar(30), p_sexo char(1))
+begin 
+	select bainome, clinome, clisexo 
+	from bairro 
+	inner join cliente
+	 on baicodigo = clibaicodigo
+     where bainome = p_bairro and clisexo = p_sexo;
+end ##
+delimiter ;
+
+
+#procedimento para listar bairro, sexo e nome de um bairro e sexo especificado verifica se bairroé válido
+delimiter ##
+create procedure sp_lista_bairro_sexo(p_bairro varchar(30), p_sexo char(1))
+begin 
+	declare v_achoubairro boolean default false;
+    set v_achoubairro = ( select count(*) 
+						from bairro
+                        where bainome = p_bairro);
+	if v_achoubairro then
+		select bainome, clinome, clisexo 
+		from bairro 
+		inner join cliente
+		 on baicodigo = clibaicodigo
+		 where bainome = p_bairro and clisexo = p_sexo;
+	else 
+		select 'Bairro inesistente' as resp;
+	end if;
+end ##
+delimiter ;
+
+drop procedure sp_lista_bairro_sexo;
+
+call sp_lista_bairro_sexo('Cachoeirinha', 'F');
+
+
+ #procedimento para listar bairro, sexo e nome de um bairro e sexo especificado verifica se bairro e sexo é válido
+delimiter ##
+create procedure sp_lista_bairro_sexo(p_bairro varchar(30), p_sexo char(1))
+begin 
+	declare v_achoubairro boolean default false;
+    declare v_sexovalido boolean default false;
+    
+    if p_sexo in('f','m')
+		then set v_sexovalido = 1;
+    end if;
+    
+    set v_achoubairro = ( select count(*) 
+						from bairro
+                        where bainome = p_bairro);
+	if v_achoubairro then
+		if(v_sexovalido) then
+			select bainome, clinome, clisexo 
+			from bairro 
+			inner join cliente
+			 on baicodigo = clibaicodigo
+			 where bainome = p_bairro and clisexo = p_sexo;
+		else
+			select 'Sexo inválido' as resp;
+		end if;
+	else 
+		if(v_sexovalido) then
+			select 'Bairro inesistente' as resp;
+		else 
+			select 'Bairro inesistente e sexo inválido' as resp;
+		end if;
+	end if;
+end ##
+delimiter ;
  
