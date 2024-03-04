@@ -527,9 +527,10 @@ alter table venda
 add constraint foreign key (venfpgcodigo) references formapagamento (fpgcodigo);
 
 # Questão 5
-select * from formapagamento;
+select * from venda;
 insert into formapagamento values(1, 'Dinheiro', true);
-update venda set venfpgcodigo = 3 where venfpgcodigo is null;
+
+update venda set venfpgcodigo = 1 where venfpgcodigo is null;
 alter table venda 
 modify venfpgcodigo smallint NOT NULL;
 
@@ -852,18 +853,18 @@ END //
 DELIMITER ;
 
 #Questão 2
-insert into alteracaosalario  values (1, 1, (select funsalario from funcionario where funcodigo = 1), current_date(), 1.1);
-update funcionario  set funsalario = funsalario * 0.8 where funcodigo = 1;
+insert into alteracaosalario (altfuncodigo, altantsalario, altnovosalario, altdata, altpercentual)   values (1, (select funsalario from funcionario where funcodigo = 1), (select funsalario from funcionario where funcodigo = 1) * 1.1,  current_date(), 1.1);
+update funcionario  set funsalario = funsalario * 1.1 where funcodigo = 1;
 
-insert into alteracaosalario  values (2, 2, (select funsalario from funcionario where funcodigo = 2), current_date(), 1.2);
+insert into alteracaosalario (altfuncodigo, altantsalario, altnovosalario, altdata, altpercentual)   values (2, (select funsalario from funcionario where funcodigo = 2), (select funsalario from funcionario where funcodigo = 2) * 1.2,  current_date(), 1.1);
 update funcionario  set funsalario = funsalario * 1.2 where funcodigo = 2;
 
-insert into alteracaosalario  values (3, 3, (select funsalario from funcionario where funcodigo = 3), current_date(), 1.09);
+insert into alteracaosalario (altfuncodigo, altantsalario, altnovosalario, altdata, altpercentual)   values (3, (select funsalario from funcionario where funcodigo = 3), (select funsalario from funcionario where funcodigo = 3) * 1.09,  current_date(), 1.1);
 update funcionario  set funsalario = funsalario * 1.09 where funcodigo = 3;
 
 
  #Questão 3
- select funnome, altsalario, altpercentual, altdata from funcionario
+ select funnome, altnovosalario, altpercentual, altdata from funcionario
 inner join alteracaosalario on altfuncodigo = funcodigo
 where altpercentual > 1;
 
@@ -998,7 +999,7 @@ begin
 end ##
 delimiter ;
 
-drop procedure sp_lista_bairro_sexo;
+drop procedure if exists sp_lista_bairro_sexo;
 
 call sp_lista_bairro_sexo('Cachoeirinha', 'F');
 
@@ -1104,8 +1105,40 @@ delimiter ;
 
 
 
-drop procedure sp_altera_salario;
+#drop procedure sp_altera_salario;
 show create table funcionario;
 select * from funcionario where fundtdem is not null;
-call sp_altera_salario_dem(2, 30000);
+call sp_altera_salario_dem(1, 3001);
+
+
+##################################		Lista 3
+
+#Questão 1 1) Mostre os históricos de alterações de salários de um determinado funcionário (nome do
+#funcionário, data de alteração e valor do salário). Utilize o código do funcionário como parâmetro
+#da SP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
