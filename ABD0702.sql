@@ -842,7 +842,7 @@ create table alteracaosalario (
     primary key (altcodigo),
     constraint foreign key (altfuncodigo) references funcionario(funcodigo)
 );
-
+/*
 DELIMITER //
 CREATE TRIGGER trgalterasalario BEFORE update ON funcionario
 FOR EACH ROW
@@ -851,7 +851,7 @@ BEGIN
     values (old.funcodigo, old.funsalario, new.funsalario,  current_date(), (new.funsalario / old.funsalario));
 END //
 DELIMITER ;
-
+*/
 #Questão 2
 insert into alteracaosalario (altfuncodigo, altantsalario, altnovosalario, altdata, altpercentual)   values (1, (select funsalario from funcionario where funcodigo = 1), (select funsalario from funcionario where funcodigo = 1) * 1.1,  current_date(), 1.1);
 update funcionario  set funsalario = funsalario * 1.1 where funcodigo = 1;
@@ -1117,28 +1117,52 @@ call sp_altera_salario_dem(1, 3001);
 #funcionário, data de alteração e valor do salário). Utilize o código do funcionário como parâmetro
 #da SP.
 
+delimiter ##
+create procedure sp_contador(p_numero tinyint)
+begin 
+	declare v_cont tinyint unsigned default 0;
+    while(v_cont <= p_numero) do
+		select v_cont;
+        set v_cont = v_cont + 1;
+	end while;
+end##
+delimiter ;
+call sp_contador(1);
 
 
+delimiter ##
+create procedure sp_posicao_string(p_string varchar(100))
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_tam tinyint;
+    set  v_tam = length(p_string); 
+    while(v_cont <= v_tam) do
+		select substring(p_string, v_cont, 1);
+        set v_cont = v_cont + 1;
+	end while;
+end##
+delimiter ;
+call sp_posicao_string('abcd');
+select concat('a', 'b');
+delimiter ##
+create procedure sp_posicao_string_vogal(p_string varchar(100))
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_tam tinyint;
+    declare v_vogais varchar(100) default '';
+    set  v_tam = length(p_string); 
+    while(v_cont <= v_tam) do
+		if (select substring(p_string, v_cont, 1)) in ('a','e','i','o','u') 
+			then
+            set v_vogais = concat(v_vogais, (substring(p_string, v_cont, 1)));
+		end if;
+        set v_cont = v_cont + 1;
+	end while;
+    select(v_vogais);
+end##
+delimiter ;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+drop procedure sp_posicao_string_vogal;
+call sp_posicao_string_vogal('adfnadkjfnedfaodsfniuop');
 
 
