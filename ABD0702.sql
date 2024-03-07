@@ -1196,7 +1196,7 @@ begin
     declare v_numeros varchar(100) default '';
     set  v_tam = length(p_string); 
     while(v_cont <= v_tam) do
-		if (select substring(p_string, v_cont, 1)) in ('0','1','2','3','4','5','6','7','8','9') 
+		if (select substring(p_string, v_cont, 1)) in ('0','2','4','6','8') 
 			then
             if v_cont < v_tam 
 				then
@@ -1210,6 +1210,8 @@ begin
     select(v_numeros);
 end##
 delimiter ;
+
+call sp_numero_par('1231341234934819438194875880');
 
 drop procedure sp_posicao_numero;
 
