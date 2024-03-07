@@ -1142,8 +1142,8 @@ begin
 	end while;
 end##
 delimiter ;
-call sp_posicao_string('abcd');
-select concat('a', 'b');
+
+
 delimiter ##
 create procedure sp_posicao_string_vogal(p_string varchar(100))
 begin 
@@ -1161,8 +1161,55 @@ begin
     select(v_vogais);
 end##
 delimiter ;
-
-drop procedure sp_posicao_string_vogal;
 call sp_posicao_string_vogal('adfnadkjfnedfaodsfniuop');
 
+delimiter ##
+create procedure sp_posicao_numero(p_string varchar(100))
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_tam tinyint;
+    declare v_numeros varchar(100) default '';
+    set  v_tam = length(p_string); 
+    while(v_cont <= v_tam) do
+		if (select substring(p_string, v_cont, 1)) in ('0','1','2','3','4','5','6','7','8','9') 
+			then
+            if v_cont < v_tam 
+				then
+				set v_numeros = concat(v_numeros, (substring(p_string, v_cont, 1)), '-');
+			else 
+				set v_numeros = concat(v_numeros, (substring(p_string, v_cont, 1)));
+			end if;
+		end if;
+        set v_cont = v_cont + 1;
+	end while;
+    select(v_numeros);
+end##
+delimiter ;
+
+call sp_posicao_numero('1-2-3-g-s-t-j-s-6-j-k-n-d-s-a-q-e-r-t-5-6-7-1');
+
+delimiter ##
+create procedure sp_numero_par(p_string varchar(100))
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_tam tinyint;
+    declare v_numeros varchar(100) default '';
+    set  v_tam = length(p_string); 
+    while(v_cont <= v_tam) do
+		if (select substring(p_string, v_cont, 1)) in ('0','1','2','3','4','5','6','7','8','9') 
+			then
+            if v_cont < v_tam 
+				then
+				set v_numeros = concat(v_numeros, (substring(p_string, v_cont, 1)), '-');
+			else 
+				set v_numeros = concat(v_numeros, (substring(p_string, v_cont, 1)));
+			end if;
+		end if;
+        set v_cont = v_cont + 1;
+	end while;
+    select(v_numeros);
+end##
+delimiter ;
+
+drop procedure sp_posicao_numero;
 
