@@ -1215,3 +1215,64 @@ call sp_numero_par('1231341234934819438194875880');
 
 drop procedure sp_posicao_numero;
 
+
+##########################################Lista 4
+
+# Questão1. Considerando que cada vogal possui os seguintes valores numéricos:
+#A = 1; E = 2; I = 3; O = 4; U = 5
+#Retorne o valor equivalente à soma de todas as vogais de um parâmetro string de n posições.
+drop procedure sp_peso_vogal;
+delimiter ##
+create procedure sp_peso_vogal(p_string varchar(100))
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_peso_total tinyint default 0;
+    declare v_numeros varchar(100) default '';
+    while(v_cont <= length(p_string)) do
+		if (select substring(p_string, v_cont, 1)) = 'a' 
+			then
+            set v_peso_total = v_peso_total + 1;
+            else if (select substring(p_string, v_cont, 1)) = 'e' 
+				then
+				set v_peso_total = v_peso_total + 2;
+					else if (select substring(p_string, v_cont, 1)) = 'i' 
+					then
+					set v_peso_total = v_peso_total + 3;
+						else if (select substring(p_string, v_cont, 1)) = 'o' 
+						then
+						set v_peso_total = v_peso_total + 4;
+							else if (select substring(p_string, v_cont, 1)) = 'u' 
+							then
+							set v_peso_total = v_peso_total + 5;
+						end if;
+					end if;
+				end if;
+			end if;
+		end if;
+        set v_cont = v_cont + 1;
+	end while;
+    select(v_peso_total);
+end##
+delimiter ;
+
+call sp_peso_vogal('Banco de dados - dados');
+
+#Questão 2. Implemente a função f_meu_left(). As únicas funções permitidas no código são substring(), length() e concat().
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
