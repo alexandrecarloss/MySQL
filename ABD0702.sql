@@ -1192,9 +1192,8 @@ delimiter ##
 create procedure sp_numero_par(p_string varchar(100))
 begin 
 	declare v_cont tinyint unsigned default 1;
-    declare v_tam tinyint;
+    declare v_tam tinyint default length(p_string);
     declare v_numeros varchar(100) default '';
-    set  v_tam = length(p_string); 
     while(v_cont <= v_tam) do
 		if (select substring(p_string, v_cont, 1)) in ('0','2','4','6','8') 
 			then
@@ -1258,15 +1257,38 @@ delimiter ;
 call sp_peso_vogal('Banco de dados - dados');
 
 #Questão 2. Implemente a função f_meu_left(). As únicas funções permitidas no código são substring(), length() e concat().
+set global log_bin_trust_function_creators = 1;
+
+delimiter ##
+create function f_meu_left(p_string varchar(100)) returns varchar(100)
+begin 
+	declare v_cont tinyint unsigned default length(p_string);
+    declare v_invertido varchar(100) default '';
+    while(v_cont > 0) do
+		set v_invertido = concat(v_invertido, (select substring(p_string, v_cont, 1)));			
+        set v_cont = v_cont - 1;
+	end while;
+    return v_invertido;
+end##
+delimiter ;
+
+select f_meu_left('chamy');
 
 
-
-
-
-
-
-
-
+#Questão 3. Implemente a função f_meu_right(), com as mesmas regras de questão 2.
+delimiter ##
+create function f_meu_right(p_string varchar(100)) returns varchar(100)
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_direito varchar(100) default '';
+    while(v_cont <= length(p_string)) do
+		set v_direito = concat(v_direito, (select substring(p_string, v_cont, 1)));			
+        set v_cont = v_cont + 1;
+	end while;
+    return v_direito;
+end##
+delimiter ;
+select f_meu_right('chamy');
 
 
 
