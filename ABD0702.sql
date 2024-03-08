@@ -1323,7 +1323,24 @@ delimiter ;
 select f_meu_locate('banco de dados - banco, banco, ban, b', 'b');
 
 
-
+#Questão 5. Implemente uma função que procura pelos seguintes caracteres: ( ) / \ + $ % - ‘ “ e caso
+#encontre, simplesmente retire do texto.
+delimiter ##
+create function f_remove_char_especiais(p_string varchar(100)) returns varchar(100)
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_direito varchar(100) default '';
+    while(v_cont <= length(p_string)) do
+		if((substring(p_string, v_cont, 1)) not in ('(',')','/','\\','+','$','%','-','\'', '\"')) #Para comparar caracteres especiais usar \ antes
+			then
+			set v_direito = concat(v_direito, substring(p_string, v_cont, 1));			
+        end if;
+        set v_cont = v_cont + 1;
+	end while;
+    return v_direito;
+end##
+delimiter ;
+select f_remove_char_especiais('\Ba()n/c+$o% -d''e" dados');
 
 
 
