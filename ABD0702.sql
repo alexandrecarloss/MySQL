@@ -1326,12 +1326,12 @@ select f_meu_locate('banco de dados - banco, banco, ban, b', 'b');
 #Questão 5. Implemente uma função que procura pelos seguintes caracteres: ( ) / \ + $ % - ‘ “ e caso
 #encontre, simplesmente retire do texto.
 delimiter ##
-create function f_remove_char_especiais(p_string varchar(100)) returns varchar(100)
+create function f_limpa_str(p_string varchar(100)) returns varchar(100)
 begin 
 	declare v_cont tinyint unsigned default 1;
     declare v_direito varchar(100) default '';
     while(v_cont <= length(p_string)) do
-		if((substring(p_string, v_cont, 1)) not in ('(',')','/','\\','+','$','%','-','\'', '\"')) #Para comparar caracteres especiais usar \ antes
+		if((substring(p_string, v_cont, 1)) not in ('(',')','/','\\','+','$','%','-','\'', '\"', '=', '[', ']')) #Para comparar caracteres especiais usar \ antes
 			then
 			set v_direito = concat(v_direito, substring(p_string, v_cont, 1));			
         end if;
@@ -1340,11 +1340,33 @@ begin
     return v_direito;
 end##
 delimiter ;
-select f_remove_char_especiais('\Ba()n/c+$o% -d''e" dados');
 
+select f_limpa_str('"Pro%gra"mação em ban/co-d$e''da)do(s]=\'');
 
-
-
+#Questão 6. Implemente a função f_capital(), que deve fazer o seguinte:
+#a. Caso encontre uma letra minúscula no início de uma string ou após um espaço, deve
+#trocar pela mesma letra maiúscula; (UPPER)
+#b. Caso encontre uma letra maiúscula no meio de uma palavra, deve trocar por
+#minúscula. (LOWER)
+select upper('a');
+delimiter ##
+create function f_capital(p_string varchar(100)) returns varchar(100)
+begin 
+	declare v_cont tinyint unsigned default 1;
+    declare v_capital varchar(100) default '';
+    while(v_cont <= length(p_string)) do
+		if substring(p_string, v_cont-1, 1) = ' ' or v_cont = 1 #Deve ser maiúsculo
+			then            
+			set v_capital = concat(v_capital, UPPER(substring(p_string, v_cont, 1)));
+            else #Deve ser minúsculo
+            set v_capital = concat(v_capital, LOWER(substring(p_string, v_cont, 1)));
+		end if;
+	set v_cont = v_cont + 1;
+	end while;
+    return v_capital;
+end##
+delimiter ;
+select f_capital('bAnCo de DaDos');
 
 
 
