@@ -1272,7 +1272,7 @@ begin
 end##
 delimiter ;
 
-select f_meu_left('chamy');
+select f_meu_left('dado');
 
 
 #Questão 3. Implemente a função f_meu_right(), com as mesmas regras de questão 2.
@@ -1282,13 +1282,47 @@ begin
 	declare v_cont tinyint unsigned default 1;
     declare v_direito varchar(100) default '';
     while(v_cont <= length(p_string)) do
-		set v_direito = concat(v_direito, (select substring(p_string, v_cont, 1)));			
+		set v_direito = concat(v_direito, substring(p_string, v_cont, 1));			
         set v_cont = v_cont + 1;
 	end while;
     return v_direito;
 end##
 delimiter ;
-select f_meu_right('chamy');
+select f_meu_right('Banco');
+
+#Questão 4. Implemente a função f_meu_locate(), sendo que a nossa vai retornar todas as posições que
+#ocorrem em determinada STRING. Lembre que “string” pode ter 1 ou n posições... 😊
+delimiter ##
+create function f_meu_locate(p_string varchar(500), p_sub varchar(500)) returns varchar(500)
+begin 
+	declare v_cont, v_cont_sub, v_continua tinyint unsigned default 1;
+    declare v_posicoes varchar(500) default '';
+    while(v_cont <= length(p_string)) do
+		if(substring(p_string, v_cont, 1) = substring(p_sub, v_cont_sub, 1)) #1 se a posição atual da string corresponte a posição atual da sub
+			then
+            set v_continua = 1;#Se a comparação está correta
+            if v_cont_sub = length(p_sub) #2 Se confirmou a substring 
+				then
+				set v_posicoes = concat(v_posicoes, v_cont - length(p_sub) +1, ', '); #Armazena a posição em que iniciou
+                set v_cont_sub = 1;#reinicia o contador da sub
+			end if; #2
+		set v_cont_sub = v_cont_sub + 1;#Contador da sub incrementa
+		else #Não corresponde a sub
+			if(v_continua = 1)#3 Se a comparação anterior estava correta
+				then
+				set v_continua = 0;
+				set v_cont = v_cont - 1;#Compara novamente o atual da string com início da sub	
+			end if; #3
+		set v_cont_sub = 1;#reinicia o contador da sub		
+		end if; #1
+        set v_cont = v_cont + 1;
+	end while;
+    return v_posicoes;
+end##
+delimiter ;
+select f_meu_locate('banco de dados - banco, banco, ban, b', 'b');
+
+
 
 
 
