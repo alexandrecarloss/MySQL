@@ -1369,5 +1369,113 @@ delimiter ;
 select f_capital('bAnCo de DaDos');
 
 
+CREATE TABLE IF NOT EXISTS funcionario_comissao (
+  fcfuncodigo INT(11) NOT NULL,
+  fcanomes CHAR(6),
+  fcvalor DECIMAL(6,2),
+  PRIMARY KEY (fcfuncodigo),
+  CONSTRAINT fk__funcionario1
+    FOREIGN KEY (fcfuncodigo)
+    REFERENCES funcionario (funcodigo)
+);
+
+
+################################## aula 20/03/2024
+delimiter ##
+create procedure sp_inserir_venda(sp_filcodigo int, sp_clicodigo int, sp_funcodigo int)
+begin 
+	if(sp_filcodigo in (select filcodigo from filial))#1
+		then
+		if(sp_clicodigo in (select clicodigo from cliente))#2
+			then
+			if(sp_funcodigo in (select funcodigo from funcionario))#3
+				then
+				insert into venda (vendata, venfilcodigo, venclicodigo, venfuncodigo) values (current_date(), sp_filcodigo, sp_clicodigo, sp_funcodigo);
+			else
+				select 'Funcionário não encontrado' resp;
+			end if;#3
+		else 
+			select 'Cliente não encontrado' resp;
+		end if;#2
+	else
+		select 'Filial não encontrada' resp;
+	end if;#1
+		
+end##
+delimiter ;
+
+#drop procedure sp_inserir_venda;
+call sp_inserir_venda(2, 4, 1000);
+
+delimiter ##
+create procedure sp_inserir_item_venda(sp_vencodigo int, sp_procodigo int, sp_qtde int)
+begin 
+	if(sp_vencodigo in (select vencodigo from venda))#1
+		then
+		if(sp_procodigo in (select procodigo from produto))#2
+			then
+            if sp_qtde <= (select prosaldo from produto where procodigo = sp_procodigo)#3
+				then
+				insert into itemvenda values (sp_vencodigo, sp_procodigo, sp_qtde);
+			else 
+				select 'Saldo do produto insuficiente' resp;
+			end if;#3
+		else 
+			select 'Cliente não encontrado' resp;
+		end if;#2
+	else
+		select 'Venda não encontrada' resp;
+	end if;#1
+end##
+delimiter ;
+
+call sp_inserir_item_venda((select max(vencodigo) from venda), 2, 24);
+
+delimiter ##
+create procedure sp_inserir_item_venda(sp_vencodigo int, sp_procodigo int, sp_qtde int)
+begin 
+	if(sp_vencodigo in (select vencodigo from venda))#1
+		then
+		if(sp_procodigo in (select procodigo from produto))#2
+			then
+            if sp_qtde <= (select prosaldo from produto where procodigo = sp_procodigo)#3
+				then
+				insert into itemvenda values (sp_vencodigo, sp_procodigo, sp_qtde);
+			else 
+				select 'Saldo do produto insuficiente' resp;
+			end if;#3
+		else 
+			select 'Cliente não encontrado' resp;
+		end if;#2
+	else
+		select 'Venda não encontrada' resp;
+	end if;#1
+end##
+delimiter ;
+
+
+drop procedure sp_inserir_item_venda;
+show create table itemvenda;
+select prosaldo from produto where procodigo = 2;
+insert into venda (vendata, venfilcodigo, venclicodigo, venfuncodigo) values (current_date(), 1, 1, 1);
+select funcodigo from funcionario;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
