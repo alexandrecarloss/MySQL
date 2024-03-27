@@ -1460,17 +1460,44 @@ select prosaldo from produto where procodigo = 2;
 insert into venda (vendata, venfilcodigo, venclicodigo, venfuncodigo) values (current_date(), 1, 1, 1);
 select funcodigo from funcionario;
 
+show create table clientestatus;
+select * from clientestatus;
 
 
+delimiter ##
+create procedure sp_cursosclientestatus()
+begin 
+	declare v_codcli int default null;
+    declare v_salario numeric(6, 2) default 0;
+    declare v_fim, v_existecliente boolean default false;
+    declare v_cursorcliente cursor for 
+									select clicodigo, clirendamensal
+                                    from cliente;
+	declare exit handler for not found set v_fim = true;
+    open v_cursorcliente;
+    while not v_fim do 
+		fetch
+        v_cursorcliente into v_codcli, v_salario;
+        set v_existecliente = (select count(*) from clientestatus 
+								where csclicodigo = v_codcli);
+		if v_salario <= 3000 then
+			if v_existecliente then
+				update clientestatus set csstatus = 'CLIENTE NORMAL'
+				where csclicodigo = v_codcli;
+			else
+				insert into clientestatus values (v_codcli, 'CLIENTE NORMAL');				
+			end if;
+		else
+			insert into clientestatus values (v_codcli, 'CLIENTE VIP');
+		end if;
+	end while;
+    close v_cursorcliente;
+end##
+delimiter ;
 
-
-
-
-
-
-
-
-
+	
+                                
+                                    
 
 
 
