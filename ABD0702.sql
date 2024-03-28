@@ -1463,9 +1463,9 @@ select funcodigo from funcionario;
 show create table clientestatus;
 select * from clientestatus;
 
-
+drop procedure sp_cursorclientestatus;
 delimiter ##
-create procedure sp_cursosclientestatus()
+create procedure sp_cursorclientestatus()
 begin 
 	declare v_codcli int default null;
     declare v_salario numeric(6, 2) default 0;
@@ -1488,16 +1488,48 @@ begin
 				insert into clientestatus values (v_codcli, 'CLIENTE NORMAL');				
 			end if;
 		else
-			insert into clientestatus values (v_codcli, 'CLIENTE VIP');
+			if v_existecliente then
+				update clientestatus set csstatus = 'CLIENTE ESPECIAL'
+                where csclicodigo = v_codcli;
+			else
+				insert into clientestatus values (v_codcli, 'CLIENTE ESPECIAL');
+			end if;
 		end if;
 	end while;
     close v_cursorcliente;
 end##
 delimiter ;
 
+
+select * from clientestatus;
+
+update cliente 
+set clirendamensal = 3700
+where clicodigo = 1;
+
+update cliente
+set clirendamensal = 2900
+where clicodigo = 2;
+
+select * from cliente;
+call sp_cursorclientestatus();
+
+create table transacao (
+trid int auto_increment,
+trconta int,
+trdata date,
+trvalor decimal(6, 2),
+primary key (trid)
+);
 	
-                                
-                                    
+create table juros (
+jutrid int,
+juvalor decimal(6, 2),
+primary key(jutrid),
+foreign key (jutrid) references transacao (trid)
+);
+                 
+
 
 
 
