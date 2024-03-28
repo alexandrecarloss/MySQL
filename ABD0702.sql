@@ -1528,10 +1528,61 @@ juvalor decimal(6, 2),
 primary key(jutrid),
 foreign key (jutrid) references transacao (trid)
 );
-                 
+        
+use information_schema;
+select * from schemata;
+select * from tables;
+select * from tables where TABLE_SCHEMA = 'bd2020';
+select * from routines where routine_SCHEMA = 'bd2020';
+
+use bd2020;
+select *
+from information_schema.columns
+where table_schema = 'bd2020' and table_name = 'cliente';
+
+select column_name, referenced_table_name, referenced_column_name
+from information_schema. key_column_usage
+where table_name = 'cliente';
+
+select *
+from information_schema.key_column_usage;
+
+select * 
+from information_schema.referential_constraints
+where constraint_schema = 'bd2020' and table_name = 'cliente';
+
+select * 
+from information_schema.columns
+where table_name in
+		(select REFERENCED_TABLE_NAME
+		from information_schema.referential_constraints
+		where constraint_schema = 'bd2020' and table_name = 'venda');
+
+select table_name, 'N' lado
+from information_schema.referential_constraints
+where constraint_schema = 'bd2020' and referenced_table_name = 'venda'
+union
+select referenced_table_name, '1' lado
+from information_schema.referential_constraints
+where constraint_schema = 'bd2020' and table_name = 'venda';
 
 
 
+delimiter ##
+create procedure sp_informacaotabela(tabela varchar(100), base varchar(100))
+begin
+	select table_name, 'N' lado
+	from information_schema.referential_constraints
+	where constraint_schema = base and referenced_table_name = tabela
+	union all
+	select referenced_table_name, '1' lado
+	from information_schema.referential_constraints
+	where constraint_schema = base and table_name = tabela;
+end ##
+delimiter ;
+
+drop procedure sp_informacaotabela;
+call sp_informacaotabela('cliente', 'bd2020');
 
 
 
