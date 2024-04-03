@@ -1584,8 +1584,45 @@ delimiter ;
 drop procedure sp_informacaotabela;
 call sp_informacaotabela('cliente', 'bd2020');
 
+create table tempoespera (
+ teclicodigo int,
+ tetempo int,
+ primary key (teclicodigo),
+ foreign key (teclicodigo) references cliente (clicodigo)
+);
+
+drop table tempoespera;
+
+alter table  cliente add clisituacao tinyint null;
+
+select * from tempoespera;
+
+UPDATE cliente set clisituacao = 0 where clicodigo < 10000;
+
+DELIMITER //
+CREATE TRIGGER trg_cliente_espera BEFORE update ON cliente
+FOR EACH ROW
+BEGIN
+	if((new.clisituacao != old.clisituacao) and new.clisituacao = 1) then
+        insert into tempoespera values (new.clicodigo, 0);
+		elseif (new.clisituacao != old.clisituacao) and new.clisituacao = 0 then
+			delete from tempoespera where teclicodigo = new.clicodigo;
+	end if;
+END //
+DELIMITER ;
+
+select * from cliente;
+
+delete from tempoespera where teclicodigo = 1;
+
+update cliente set clisituacao = 1 where clicodigo = 2;
+
+create event ev_monitor_espera
+on schedule every 10 second
+do
+	update tempoespera
+	set tetempo = tetempo + 10;
 
 
-
-
-
+    
+drop trigger trg_cliente_espera;
