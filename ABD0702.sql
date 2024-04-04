@@ -1667,21 +1667,39 @@ select table_name, CHARACTER_MAXIMUM_LENGTH
 from information_schema.columns
 where table_schema = 'bd2020' and data_type in ('varchar', 'char', 'date');
 
+select table_name, sum(CHARACTER_MAXIMUM_LENGTH)
+from information_schema.columns
+where table_schema = 'bd2020' and data_type in ('varchar', 'char') and table_name = 'cliente'
+group by table_name;
+
 select table_name, CHARACTER_MAXIMUM_LENGTH
 from information_schema.columns
-where table_schema = 'bd2020' and data_type in ('varchar', 'char', 'date') and table_name = 'cliente';
+where table_schema = 'bd2020' and data_type in ('date') and table_name = 'cliente';
 
+select count(*)
+from information_schema.columns
+where table_schema = 'bd2020' and data_type in ('date') and table_name = 'cliente';
 
 set global log_bin_trust_function_creators = 1;
+use bd2020;
 delimiter ##
 create function f_conta_caracter(p_tabela varchar(100)) returns varchar(100)
 begin 
 	declare v_total int default 0;
-    
-   
+    set v_total = v_total +(
+		select table_name, sum(CHARACTER_MAXIMUM_LENGTH)
+		from information_schema.columns
+		where table_schema = 'bd2020' and data_type in ('varchar', 'char') and table_name = 'cliente'
+		group by table_name);
+   set v_total = v_total +((
+	select count(*)
+	from information_schema.columns
+	where table_schema = 'bd2020' and data_type in ('date') and table_name = 'cliente') * 10);
     return v_total;
 end##
 delimiter ;
+
+select f_conta_caracter('a');
 
 
 
