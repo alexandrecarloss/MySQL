@@ -1528,7 +1528,10 @@ juvalor decimal(6, 2),
 primary key(jutrid),
 foreign key (jutrid) references transacao (trid)
 );
-        
+   
+################################################################################################################           METADADOS
+
+
 use information_schema;
 select * from schemata;
 select * from tables;
@@ -1567,7 +1570,7 @@ from information_schema.referential_constraints
 where constraint_schema = 'bd2020' and table_name = 'venda';
 
 
-
+use bd2020;
 delimiter ##
 create procedure sp_informacaotabela(tabela varchar(100), base varchar(100))
 begin
@@ -1623,6 +1626,77 @@ do
 	update tempoespera
 	set tetempo = tetempo + 10;
 
+############################ Questões sobre metadados
+use information_schema;
+select distinct table_name
+from tables
+where table_schema = 'information_schema';
+select * from tables where table_schema = 'bd2020';
+select * from INNODB_FOREIGN_cols;
+select * from INNODB_FOREIGN;
 
+select * from schemata;
+
+delimiter ##
+create procedure sp_informacaotabelacontar(tabela varchar(100), base varchar(100))
+begin
+	select table_name, 'N' lado
+	from information_schema.referential_constraints
+	where constraint_schema = base and referenced_table_name = tabela
+	union all
+	select referenced_table_name, '1' lado
+	from information_schema.referential_constraints
+	where constraint_schema = base and table_name = tabela;
+end ##
+delimiter ;
+use bd2020;
+CALL sp_informacaotabela('venda', 'bd2020');
+
+### Questão 1 
+select table_name, count(referenced_table_name) 'Qtd de relacionamentos' from information_schema.referential_constraints 
+where constraint_schema = 'bd2020'
+group by table_name;
+
+
+### Questão 2
+select *
+from information_schema.columns
+where table_schema = 'bd2020' and data_type in ('date', 'varchar', 'char');
+
+select table_name, CHARACTER_MAXIMUM_LENGTH
+from information_schema.columns
+where table_schema = 'bd2020' and data_type in ('varchar', 'char', 'date');
+
+select table_name, CHARACTER_MAXIMUM_LENGTH
+from information_schema.columns
+where table_schema = 'bd2020' and data_type in ('varchar', 'char', 'date') and table_name = 'cliente';
+
+
+set global log_bin_trust_function_creators = 1;
+delimiter ##
+create function f_conta_caracter(p_tabela varchar(100)) returns varchar(100)
+begin 
+	declare v_total int default 0;
     
-drop trigger trg_cliente_espera;
+   
+    return v_total;
+end##
+delimiter ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
