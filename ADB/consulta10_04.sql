@@ -17,6 +17,7 @@ inner join salaries s on e.emp_no = s.emp_no
 where first_name like 'a%' or first_name like 'm%'
 or first_name like 's%';
 
+create index idx_empregado_first_name on employees(first_name(1));
 #Questão 2
 select first_name from employees
 where emp_no in(
