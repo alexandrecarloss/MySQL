@@ -80,7 +80,17 @@ delimiter ##
 create procedure sp_folha_pagamento(p_departamento varchar(30))
 begin 
 	if p_departamento = 'todos' then
-		select sum(s.salary) total_todos from salaries s;
+		select sum(s.salary) from employees e
+		inner join salaries s on s.emp_no = e.emp_no
+		inner join dept_emp de on de.emp_no = e.emp_no
+		inner join departments d on d.dept_no = de.dept_no
+		where s.to_date = (select max(sin.to_date)
+							from salaries sin 
+							where sin.emp_no = s.emp_no) 
+		and de.to_date = (select max(dein.to_date)
+							from dept_emp dein
+							where dein.emp_no = de.emp_no)
+		;
 	else 
 		select sum(s.salary) total from employees e
 		inner join salaries s on s.emp_no = e.emp_no
@@ -92,6 +102,7 @@ begin
 		and de.to_date = (select max(dein.to_date)
 							from dept_emp dein
 							where dein.emp_no = de.emp_no)
+		and d.dept_name = p_departamento
 		;
         end if;
 end ##
