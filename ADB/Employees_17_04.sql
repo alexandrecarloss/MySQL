@@ -17,7 +17,7 @@ use empregados;
 # Questão A1
 create view vw_funcionario_dados
 as
-select e.emp_no, s.salary, t.title, d.dept_name  from 
+select concat(e.first_name, ' ', e.last_name) nome, s.salary, t.title, d.dept_name  from 
 employees e 
 inner join titles t on t.emp_no = e.emp_no
 inner join salaries s on s.emp_no = e.emp_no
@@ -80,7 +80,7 @@ delimiter ##
 create procedure sp_folha_pagamento(p_departamento varchar(30))
 begin 
 	if p_departamento = 'todos' then
-		select sum(s.salary) total from salaries s;
+		select sum(s.salary) total_todos from salaries s;
 	else 
 		select sum(s.salary) total from employees e
 		inner join salaries s on s.emp_no = e.emp_no
@@ -98,6 +98,7 @@ end ##
 delimiter ;
 
 call sp_folha_pagamento('Customer Service');
+call sp_folha_pagamento('todos');
 
 
 select sum(s.salary) from salaries s;
@@ -115,10 +116,57 @@ and de.to_date = (select max(dein.to_date)
 ;
 
 
+# Questão B3
+/*3 - Mostrar quantas vezes cada funcionário mudou de departamento (parâmetro 'todos') 
+3.1 - Mostrar os nomes dos funcionários com o maior número de mudanças de um departamento).*/
+
+select e.first_name from employees e
+inner join dept_emp de on de.emp_no = e.emp_no
+inner join departments d on d.dept_no = de.dept_no
+where s.to_date = (select max(sin.to_date)
+					from salaries sin 
+                    where sin.emp_no = s.emp_no) 
+and de.to_date = (select max(dein.to_date)
+					from dept_emp dein
+                    where dein.emp_no = de.emp_no);
+
+select e.first_name, count(d.dept_name), d.dept_name departamentos from employees e 
+inner join dept_emp de on de.emp_no = e.emp_no
+inner join departments d on d.dept_no = de.dept_no
+group by e.emp_no, d.dept_name;
+
+select e.first_name, count(d.dept_name) departamentos from employees e 
+inner join dept_emp de on de.emp_no = e.emp_no
+inner join departments d on d.dept_no = de.dept_no
+where count(d.dept_name) <= (
+					select count(d.dept_name) departamentos from employees e 
+					inner join dept_emp de on de.emp_no = e.emp_no
+					inner join departments d on d.dept_no = de.dept_no
+					group by e.emp_no
+					order by departamentos desc limit 1)
+group by e.emp_no
+order by departamentos desc 
+;
+
+select count(de.emp_no) departamentos, de.emp_no from dept_emp de
+group by de.emp_no;
 
 
 
-
-
-
+explain analyze select concat(e.first_name, ' ', e.last_name) nome, s.salary, t.title, d.dept_name  from 
+employees e 
+inner join titles t on t.emp_no = e.emp_no
+inner join salaries s on s.emp_no = e.emp_no
+inner join dept_emp de on de.emp_no = e.emp_no
+inner join departments d on d.dept_no = de.dept_no
+where t.to_date = (select max(tin.to_date)
+					from titles tin 
+                    where tin.emp_no = t.emp_no)
+and s.to_date = (select max(sin.to_date)
+					from salaries sin 
+                    where sin.emp_no = s.emp_no) 
+and de.to_date = (select max(dein.to_date)
+					from dept_emp dein
+                    where dein.emp_no = de.emp_no) 
+;
 
