@@ -10,8 +10,11 @@ Parâmetros sexo e departamento
 3.1 - Mostrar os nomes dos funcionários com o maior número de mudanças de um departamento).
 */
 
+# alterar Edit>Preferences>Sql Execution desmarcar limit row
+# alterar Edit>Preferences>Sql editor read timeout interval = 300 onde está 30
 use empregados;
-# Questão 1
+
+# Questão A1
 create view vw_funcionario_dados
 as
 select e.emp_no, s.salary, t.title, d.dept_name  from 
@@ -35,7 +38,7 @@ select * from vw_funcionario_dados;
 
 select * from employees order by emp_no;
 
-#Questão 2
+#Questão B1
 delimiter ##
 create procedure sp_funcionario_sexo_departamento(p_sexo char(1), p_departamento varchar(30))
 begin 
@@ -68,7 +71,48 @@ and d.dept_name = 'Customer Service'
 and gender = 'F';
 
 
+# Questão B2
+#2 - Mostrar o total da folha de pagamento da empresa  (parâmetro 'todos')
+#2.1 - Mostrar o total da folha de pagamento de
+#	determinado departamento (parâmetro nome do departamento)
 
+delimiter ##
+create procedure sp_folha_pagamento(p_departamento varchar(30))
+begin 
+	if p_departamento = 'todos' then
+		select sum(s.salary) total from salaries s;
+	else 
+		select sum(s.salary) total from employees e
+		inner join salaries s on s.emp_no = e.emp_no
+		inner join dept_emp de on de.emp_no = e.emp_no
+		inner join departments d on d.dept_no = de.dept_no
+		where s.to_date = (select max(sin.to_date)
+							from salaries sin 
+							where sin.emp_no = s.emp_no) 
+		and de.to_date = (select max(dein.to_date)
+							from dept_emp dein
+							where dein.emp_no = de.emp_no)
+		;
+        end if;
+end ##
+delimiter ;
+
+call sp_folha_pagamento('Customer Service');
+
+
+select sum(s.salary) from salaries s;
+
+select sum(s.salary) from employees e
+inner join salaries s on s.emp_no = e.emp_no
+inner join dept_emp de on de.emp_no = e.emp_no
+inner join departments d on d.dept_no = de.dept_no
+where s.to_date = (select max(sin.to_date)
+					from salaries sin 
+                    where sin.emp_no = s.emp_no) 
+and de.to_date = (select max(dein.to_date)
+					from dept_emp dein
+                    where dein.emp_no = de.emp_no)
+;
 
 
 
