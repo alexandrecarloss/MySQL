@@ -202,37 +202,8 @@ and s.from_date = (select min(sin.from_date)
 ;	
 
 
-## Questão 2
-with UltimoSalario as
-	select emp_no, max(to_date) as max_salario_data
-	from salaries
-	group by emp_no
-),
-UltimoDepto as (
-	select emp_no, max(to_date) as max_dept_data
-    from depto_tmp
-    group by emp_no
-),
-UltimoCargo as (
-	select emp_no, max(to_date) as max_title_data
-    from titles
-    group by emp_no
-)
-Select concat(e.first_name, ' ', e.last_nam) Nome,
-	s.salary as 'Ultimo Salário',
-    d.dept_name as 'Ultimo Departamnto',
-    t.title as 'Ultimo Cargo',
-from employees e
-inner join UltimoSalario us on e.emp_no = us .emp_no
-inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
-inner join UltimoDepto ed on e.emp_no = ud.emp_no
-inner join dept_emp de on e.emp_no = de.emp_no and de.to-d = ud.max_dept_data
-inner join UltimoCargo uc on e.emp_no = uc.emp_no
-inner join titles t on t.to_date = uc.max_tite_data
-inner join departmnts d on de.dept_no = d.dept_no;
-
-
-#CTE sem titles
+## Testes
+#CTE titles
 with UltimoSalario as (
 	select emp_no, max(to_date) as max_salario_data
 	from salaries
@@ -242,21 +213,47 @@ UltimoDepto as (
 	select emp_no, max(to_date) as max_dept_data
     from dept_emp
     group by emp_no
+),
+UltimoCargo as (
+	select emp_no, max(to_date) as max_title_data
+    from titles
+    group by emp_no
 )
 select concat(e.first_name, ' ', e.last_name) Nome,
 	s.salary as 'Ultimo Salário',
-    d.dept_name as 'Ultimo Departamento'
+    d.dept_name as 'Ultimo Departamento',
+    t.title as 'Ultimo Cargo'
 from employees e
 inner join UltimoSalario us on e.emp_no = us.emp_no
 inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
 inner join UltimoDepto ud on e.emp_no = ud.emp_no
 inner join dept_emp de on e.emp_no = de.emp_no and de.to_date = ud.max_dept_data
-inner join departments d on de.dept_no = d.dept_no;
+inner join departments d on de.dept_no = d.dept_no
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on e.emp_no = t.emp_no and t.to_date = uc.max_title_data;
+
+with UltimoCargo as (
+	select emp_no, max(to_date) as max_title_data
+    from titles
+    group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+	t.title as 'Ultimo Cargo'
+from employees e
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on e.emp_no = t.emp_no and t.to_date = uc.max_title_data;
 
 
-
-
-
+select concat(e.first_name, ' ', e.last_name) Nome,
+	t.title as 'Ultimo Cargo'
+    from employees e
+    inner join titles t on t.emp_no = e.emp_no
+where t.from_date = (select min(tin.from_date)
+					from titles tin
+                    where tin.emp_no = t.emp_no);
+                    
+                    
+                    
 with UltimoSalario as (
 	select emp_no, max(to_date) as max_salario_data
 	from salaries
@@ -272,14 +269,98 @@ inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
 
 
 
-with UltimoDepto as (
-	select emp_no, max(to_date) as max_dept_data
-    from dept_emp
+
+with UltimoSalario as (
+	select emp_no, max(to_date) as max_salario_data
+	from salaries
+	group by emp_no
+),
+UltimoCargo as (
+	select emp_no, max(to_date) as max_title_data
+    from titles
+    group by emp_no
+),
+PrimeiroGerente as (
+	select emp_no, min(from_date) as min_manager_data
+    from dept_manager
     group by emp_no
 )
 select concat(e.first_name, ' ', e.last_name) Nome,
-    d.dept_name as 'Ultimo Departamento'
-from employees e
-inner join UltimoDepto ud on e.emp_no = ud.emp_no
-inner join dept_emp de on e.emp_no = de.emp_no and de.to_date = ud.max_dept_data
-inner join departments d on de.dept_no = d.dept_no;
+	s.salary as 'Ultimo Salário',
+    t.title as 'Ultimo Cargo',
+    d.dept_name as 'Departamento',
+    dm.from_date as 'Inicio'
+    
+from dept_manager dm
+inner join PrimeiroGerente pg on dm.emp_no = pg.emp_no
+inner join employees e on e.emp_no = dm.emp_no and  dm.from_date = pg.min_manager_data
+inner join UltimoSalario us on e.emp_no = us.emp_no
+inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
+inner join departments d on dm.dept_no = d.dept_no
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on e.emp_no = t.emp_no and t.to_date = uc.max_title_data;
+
+
+
+#Funciona
+with PrimeiroGerente as (
+	select dept_no, min(from_date) as min_manager_data
+    from dept_manager
+    group by dept_no
+),
+UltimoSalario as (
+	select emp_no, max(to_date) as max_salario_data
+	from salaries
+	group by emp_no
+),
+UltimoCargo as (
+	select emp_no, max(to_date) as max_title_data
+    from titles
+    group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+	d.dept_name as 'Departamento', 
+    dm.from_date as 'Início',
+    s.salary as 'Salário',
+    t.title as 'Cargo'
+from PrimeiroGerente pg
+inner join dept_manager dm on dm.dept_no = pg.dept_no and dm.from_date = pg.min_manager_data
+inner join employees e  on e.emp_no = dm.emp_no
+inner join departments d on dm.dept_no = d.dept_no
+inner join UltimoSalario us on e.emp_no = us.emp_no
+inner join salaries s on s.emp_no = e.emp_no and s.to_date = us.max_salario_data 
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on e.emp_no = t.emp_no and t.to_date = uc.max_title_data;
+
+
+
+
+
+#Qestão 3
+with PrimeiroGerente as (
+	select dept_no, min(from_date) as min_manager_data
+    from dept_manager
+    group by dept_no
+),
+UltimoSalario as (
+	select emp_no, min(from_date) as min_salario_data
+	from salaries
+	group by emp_no
+),
+UltimoCargo as (
+	select emp_no, min(from_date) as min_title_data
+    from titles
+    group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+	d.dept_name as 'Departamento', 
+    s.salary as 'Salário',
+    t.title as 'Cargo'
+from PrimeiroGerente pg
+inner join dept_manager dm on dm.dept_no = pg.dept_no and dm.from_date = pg.min_manager_data
+inner join employees e  on e.emp_no = dm.emp_no
+inner join departments d on dm.dept_no = d.dept_no
+inner join UltimoSalario us on e.emp_no = us.emp_no
+inner join salaries s on s.emp_no = e.emp_no and s.from_date = us.min_salario_data 
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on e.emp_no = t.emp_no and t.from_date = uc.min_title_data;
