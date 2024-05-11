@@ -181,3 +181,105 @@ and de.to_date = (select max(dein.to_date)
                     where dein.emp_no = de.emp_no) 
 ;
 
+
+###################################### Lista de exercícios
+###### Questão 2		
+
+select concat(e.first_name, ' ', e.last_name) nome, d.dept_name, dm.from_date, s.salary, t.title from dept_manager dm
+inner join employees e on e.emp_no = dm.emp_no
+inner join departments d on d.dept_no = dm.dept_no
+inner join salaries s on s.emp_no = e.emp_no
+inner join titles t on t.emp_no = e.emp_no
+where dm.from_date = (select min(dmin.from_date)
+					from dept_emp dmin
+                    where dmin.emp_no = dm.emp_no) 
+and t.from_date = (select min(tin.from_date)
+					from titles tin
+                    where tin.emp_no = dm.emp_no) 
+and s.from_date = (select min(sin.from_date)
+					from salaries sin
+                    where sin.emp_no = dm.emp_no)				
+;	
+
+
+## Questão 2
+with UltimoSalario as
+	select emp_no, max(to_date) as max_salario_data
+	from salaries
+	group by emp_no
+),
+UltimoDepto as (
+	select emp_no, max(to_date) as max_dept_data
+    from depto_tmp
+    group by emp_no
+),
+UltimoCargo as (
+	select emp_no, max(to_date) as max_title_data
+    from titles
+    group by emp_no
+)
+Select concat(e.first_name, ' ', e.last_nam) Nome,
+	s.salary as 'Ultimo Salário',
+    d.dept_name as 'Ultimo Departamnto',
+    t.title as 'Ultimo Cargo',
+from employees e
+inner join UltimoSalario us on e.emp_no = us .emp_no
+inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
+inner join UltimoDepto ed on e.emp_no = ud.emp_no
+inner join dept_emp de on e.emp_no = de.emp_no and de.to-d = ud.max_dept_data
+inner join UltimoCargo uc on e.emp_no = uc.emp_no
+inner join titles t on t.to_date = uc.max_tite_data
+inner join departmnts d on de.dept_no = d.dept_no;
+
+
+#CTE sem titles
+with UltimoSalario as (
+	select emp_no, max(to_date) as max_salario_data
+	from salaries
+	group by emp_no
+),
+UltimoDepto as (
+	select emp_no, max(to_date) as max_dept_data
+    from dept_emp
+    group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+	s.salary as 'Ultimo Salário',
+    d.dept_name as 'Ultimo Departamento'
+from employees e
+inner join UltimoSalario us on e.emp_no = us.emp_no
+inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data
+inner join UltimoDepto ud on e.emp_no = ud.emp_no
+inner join dept_emp de on e.emp_no = de.emp_no and de.to_date = ud.max_dept_data
+inner join departments d on de.dept_no = d.dept_no;
+
+
+
+
+
+with UltimoSalario as (
+	select emp_no, max(to_date) as max_salario_data
+	from salaries
+	group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+	s.salary as 'Ultimo Salário'
+from employees e
+inner join UltimoSalario us on e.emp_no = us.emp_no
+inner join salaries s on e.emp_no = s.emp_no and s.to_date = us.max_salario_data;
+
+
+
+
+
+with UltimoDepto as (
+	select emp_no, max(to_date) as max_dept_data
+    from dept_emp
+    group by emp_no
+)
+select concat(e.first_name, ' ', e.last_name) Nome,
+    d.dept_name as 'Ultimo Departamento'
+from employees e
+inner join UltimoDepto ud on e.emp_no = ud.emp_no
+inner join dept_emp de on e.emp_no = de.emp_no and de.to_date = ud.max_dept_data
+inner join departments d on de.dept_no = d.dept_no;
