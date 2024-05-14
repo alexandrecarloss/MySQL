@@ -364,3 +364,21 @@ inner join UltimoSalario us on e.emp_no = us.emp_no
 inner join salaries s on s.emp_no = e.emp_no and s.from_date = us.min_salario_data 
 inner join UltimoCargo uc on e.emp_no = uc.emp_no
 inner join titles t on e.emp_no = t.emp_no and t.from_date = uc.min_title_data;
+
+create index idx_title_emp on titles(emp_no, title);
+
+alter table titles drop index idx_title_emp;
+
+use bd2020;
+
+create table departamento (
+	depnum int primary key,
+	depnome varchar(100)
+);
+
+alter table funcionario add column fundepnum int;
+ALTER TABLE funcionario ADD CONSTRAINT fk_departamento FOREIGN KEY(fundepnum) REFERENCES departamento (depnum);
+
+select * from empregados.departments;
+
+select * from funcionario;
